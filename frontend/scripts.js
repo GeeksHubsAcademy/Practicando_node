@@ -22,9 +22,11 @@ const registro = event => {
         .then( console.log )
 }
 
-const Registro = `<form onsubmit="registro(event)">
+const Registro = `<form onsubmit="registro(event)"
+                class="register">
+                <h2>Darse de alta:</h2>
                     <input type="text" name="usuario">
-                    <input type="password" name="password" id="">
+                    <input type="password" name="password" >
                     <button type="submit">Registrarse</button>
 </form>`
 const Home = `<div>Home</div>`
@@ -39,3 +41,7 @@ const onNavClick = ruta => {
         location.origin + ruta )
         contenido.innerHTML=router[ruta]
 }
+window.addEventListener('popstate',
+()=> contenido.innerHTML=router[location.pathname])
+window.addEventListener('load',
+()=> contenido.innerHTML=router[location.pathname])
