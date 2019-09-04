@@ -11,7 +11,7 @@ app.get( '/',  ( req, res ) => {
     res.send('hola express')
 })
 app.post('/signup',(req,res)=>{
-    console.log(req.headers)
-    res.send(req.body); 
+
+    res.send(req.body); //reenviamos el body de la petición
 })
 app.listen( 3000 ,()=>console.log('servidor levantado en el puerto 3000'))
