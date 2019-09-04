@@ -2,7 +2,7 @@ const express = require( 'express' );
 const app = express();
 const mongoose=require('mongoose');
 
-mongoose.connect('mongodb://localhost:27017')
+mongoose.connect('mongodb://localhost:27017/NombreBD',{useNewUrlParser:true})
 .then(()=>console.log('conexión con MongoDB establecida con éxito'))
 .catch(error=>console.log('Error al conectar a MongoDB: '+error))
 
