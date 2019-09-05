@@ -16,7 +16,7 @@ app.use(express.json()); //parsea de JSON el body de la petición
 app.get( '/',  ( req, res ) => res.send('hola express') );
 app.post('/signup',(req,res)=>{
     new UserModel(req.body).save()
-    .then(user=>res.send(user))
+    .then(user=>res .send(user))
     .catch(error=>{
         console.log(error);
         res.status(500)

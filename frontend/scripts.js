@@ -19,15 +19,20 @@ const registro = event => {
             } ),
         } )
         .then( res => res.json() )
-        .then( console.log )
+        .then( user => {
+            event.target.usuario.value = "";
+            event.target.password.value = "";
+            contenido.innerHTML = `Bievenido ${user.usuario}`
+        } )
 }
-
+let Msg = ""
 const Registro = `<form onsubmit="registro(event)"
                 class="register">
                 <h2>Darse de alta:</h2>
                     <input type="text" name="usuario">
                     <input type="password" name="password" >
                     <button type="submit">Registrarse</button>
+                    <p>${Msg}</p>
 </form>`
 const Home = `<div>Home</div>`
 const contenido = document.querySelector( '.contenido' );
@@ -39,9 +44,9 @@ const onNavClick = ruta => {
     history.pushState( {},
         ruta + ' | nodePracicas',
         location.origin + ruta )
-        contenido.innerHTML=router[ruta]
+    contenido.innerHTML = router[ ruta ]
 }
-window.addEventListener('popstate',
-()=> contenido.innerHTML=router[location.pathname])
-window.addEventListener('load',
-()=> contenido.innerHTML=router[location.pathname])
+window.addEventListener( 'popstate',
+    () => contenido.innerHTML = router[ location.pathname ] )
+window.addEventListener( 'load',
+    () => contenido.innerHTML = router[ location.pathname ] )
