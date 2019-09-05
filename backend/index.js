@@ -1,8 +1,8 @@
 const express = require( 'express' );
 const app = express();
 const mongoose=require('mongoose');
-
-mongoose.connect('mongodb://localhost:27017/NombreBD',{useNewUrlParser:true})
+const UserModel=require('./models/User')
+mongoose.connect('mongodb://localhost:27017/usuario',{useNewUrlParser:true})
 .then(()=>console.log('conexión con MongoDB establecida con éxito'))
 .catch(error=>console.log('Error al conectar a MongoDB: '+error))
 
@@ -13,12 +13,14 @@ app.use( function ( req, res, next ) {
 } );
 
 app.use(express.json()); //parsea de JSON el body de la petición 
-app.get( '/',  ( req, res ) => {
-    res.send('hola express')
-})
+app.get( '/',  ( req, res ) => res.send('hola express') );
 app.post('/signup',(req,res)=>{
-    console.log(req.body);
-    
-    res.send(req.body); //reenviamos el body de la petición
+    new UserModel(req.body).save()
+    .then(user=>res.send(user))
+    .catch(error=>{
+        console.log(error);
+        res.status(500)
+        .send('Ha habido un problema al registrar el usuario')
+    })
 })
 app.listen( 3000 ,()=>console.log('servidor levantado en el puerto 3000'))
