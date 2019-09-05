@@ -1,8 +1,17 @@
 const mongoose=require('mongoose');
 
 const userSchema=new mongoose.Schema({
-    usuario:String,
-    password:String
+    usuario:{
+        type:String,
+        required:true,
+        unique:true,
+        index:true
+    },
+    password:{
+        type:String,
+        required:true,
+        minlength:8
+    }
 });
 
 
