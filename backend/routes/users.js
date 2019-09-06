@@ -1,6 +1,7 @@
 const router = require( 'express' ).Router();
 const UserModel = require( '../models/User' );
-const bcrypt = require( 'bcrypt' )
+const bcrypt = require( 'bcrypt' );
+const jwt=require('jsonwebtoken');
 router.get( '/', ( req, res ) => { //READ
     UserModel.find( {} ).then( users => res.send( users ) ).catch( console.log )
 } );
@@ -21,7 +22,9 @@ router.post( '/login', async ( req, res ) => {
         if ( !user ) return res.status( 400 ).send( 'Usuario o contraseña incorrectos' )
         const isMatch = await bcrypt.compare( req.body.password, user.password )
         if ( !isMatch ) return res.status( 400 ).send( 'Usuario o contraseña incorrectos' )
-        res.json( user )
+        const token= await jwt.sign({_id:user._id},"mimamamemimamucho",{expiresIn:'7d'});
+        console.log(token);
+        res.json( {user,token} );
     } catch ( error ) {
         console.log( error );
         res.status( 500 ).send( 'ha habido un problema con el servidor' )

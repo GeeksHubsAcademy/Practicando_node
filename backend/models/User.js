@@ -7,12 +7,26 @@ const userSchema = new mongoose.Schema( {
         unique: true,
         index: true
     },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        index: true
+    },
     password: {
         type: String,
         required: true,
         minlength: 8
-    }
+    },
+    tokens:[String]
 } );
+userSchema.methods.toJSON=function () {
+    const user=this.toObject();
+    delete user.password; 
+    delete user.__v;//omite los campos password y __V en la respuesta
+    return user;
+}
+
 userSchema.pre( 'save', function ( next ) {
     const user = this;
     if ( user.isModified( 'password' ) ) {
