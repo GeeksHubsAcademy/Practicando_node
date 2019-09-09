@@ -6,6 +6,8 @@
 //         } )
 //         .catch( error => console.log( error ) )
 // }
+const header = document.querySelector( 'header' );
+
 const registro = event => {
     event.preventDefault(); //evita que se refresque la página
     fetch( 'http://localhost:3000/user/signup', {
@@ -39,18 +41,28 @@ const login = event => {
             } )
         } ).then( res => res.status === 200 ? res.json() : res.text() )
         .then( res => {
-            console.log( res );
-
+            const loginMsg = document.querySelector( '.loginMsg' ); // selecciono el nodo p
             if ( typeof res === 'string' ) {
-                document.querySelector( '.loginMsg' ).classList.add('alert','alert-danger')
-                return  document.querySelector( '.loginMsg' ).innerHTML = res
+                loginMsg.classList.add( 'alert', 'alert-danger' ); // añade clases de bootstrap para darle estilos
+                return loginMsg.innerHTML = res //añade el mensaje de error proveniente del backend al DOM
             }
-             document.querySelector( '.loginMsg' ).classList.add('alert','alert-success');
-             document.querySelector( '.loginMsg' ).innerHTML = `Bienvenido ${res.user.usuario}.`
-             localStorage.setItem('token',res.token)
+            loginMsg.classList.add( 'alert', 'alert-success' ); // añade clases de bootstrap para darle estilos
+            loginMsg.innerHTML = `Bienvenido ${res.user.usuario}.` //añade al DOM mensaje de bienvenida al usuario
+            localStorage.setItem( 'token', res.token ); //añade al localStorage el token del usuario
+            localStorage.setItem( 'user', JSON.stringify( res.user ) ) //añade el objeto usuario al localStorage
+            document.querySelector( 'header' ).innerHTML = loggedIn;
         } )
 }
-
+const notLoggedIn = `
+            <span onclick="onNavClick('/')">Home</span>
+            <span onclick="onNavClick('/registro')">Registro</span>
+            <span onclick="onNavClick('/login')">Login</span>
+`
+const loggedIn = `
+            <span onclick="onNavClick('/')">Home</span>
+            <span onclick="onNavClick('/profile')">${localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).usuario:''}</span>
+            <span onclick="onNavClick('/logout')">Logout</span>
+`
 let Msg = ""
 const Registro = `<form onsubmit="registro(event)"
                 class="register">
@@ -85,4 +97,7 @@ const onNavClick = ruta => {
 window.addEventListener( 'popstate',
     () => contenido.innerHTML = router[ location.pathname ] )
 window.addEventListener( 'load',
-    () => contenido.innerHTML = router[ location.pathname ] )
+    () => {
+        contenido.innerHTML = router[ location.pathname ]
+        localStorage.getItem( 'user' ) ? header.innerHTML=loggedIn:header.innerHTML=notLoggedIn;
+    } )

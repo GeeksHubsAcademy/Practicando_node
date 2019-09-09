@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema( {
 userSchema.methods.toJSON=function () {
     const user=this.toObject();
     delete user.password; 
+    delete user.tokens; 
     delete user.__v;//omite los campos password y __V en la respuesta
     return user;
 }
