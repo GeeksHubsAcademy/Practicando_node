@@ -25,10 +25,9 @@ router.post( '/login', async ( req, res ) => {
         const isMatch = await bcrypt.compare( req.body.password, user.password )
         if ( !isMatch ) return res.status( 400 ).send( 'Usuario o contraseña incorrectos' );
         const token = await jwt.sign( { _id: user._id }, "mimamamemimamucho", { expiresIn: '7d' } );
+        console.log( jwt.verify( token, "mimamamemimamucho" ) );
 
-        console.log( user.tokens );
         user.tokens.push( token )
-        console.log( user.tokens );
         user.save()
         res.json( { user, token } );
     } catch ( error ) {
