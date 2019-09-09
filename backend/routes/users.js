@@ -1,7 +1,7 @@
 const router = require( 'express' ).Router();
 const UserModel = require( '../models/User' );
 const bcrypt = require( 'bcrypt' );
-const jwt=require('jsonwebtoken');
+const jwt = require( 'jsonwebtoken' );
 router.get( '/', ( req, res ) => { //READ
     UserModel.find( {} ).then( users => res.send( users ) ).catch( console.log )
 } );
@@ -16,16 +16,21 @@ router.post( '/signup', async ( req, res ) => { //CREATE
 } )
 router.post( '/login', async ( req, res ) => {
     try {
-        const user = await UserModel.findOne( { $or: [ 
-            { usuario: req.body.usuario }, { email: req.body.email } 
-        ] } ); 
+        const user = await UserModel.findOne( {
+            $or: [
+                { usuario: req.body.usuario }, { email: req.body.email }
+            ]
+        } );
         if ( !user ) return res.status( 400 ).send( 'Usuario o contraseña incorrectos' )
         const isMatch = await bcrypt.compare( req.body.password, user.password )
         if ( !isMatch ) return res.status( 400 ).send( 'Usuario o contraseña incorrectos' );
-        const token= await jwt.sign({_id:user._id},"mimamamemimamucho",{expiresIn:'7d'});
-        user.tokens.push(token)
-        console.log(token);
-        res.json( {user,token} );
+        const token = await jwt.sign( { _id: user._id }, "mimamamemimamucho", { expiresIn: '7d' } );
+
+        console.log( user.tokens );
+        user.tokens.push( token )
+        console.log( user.tokens );
+        user.save()
+        res.json( { user, token } );
     } catch ( error ) {
         console.log( error );
         res.status( 500 ).send( 'ha habido un problema con el servidor' )
