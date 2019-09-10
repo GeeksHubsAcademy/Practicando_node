@@ -18,7 +18,13 @@ const userSchema = new mongoose.Schema( {
         required: true,
         minlength: 8
     },
+    confirmedEmail:{
+        type:Boolean,
+        default:false
+    },
     tokens:[String]
+},{
+    timestamps:true
 } );
 userSchema.methods.toJSON=function () {
     const user=this.toObject();
