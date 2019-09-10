@@ -3,7 +3,7 @@ const UserModel = require( '../models/User' );
 const bcrypt = require( 'bcrypt' );
 const jwt = require( 'jsonwebtoken' );
 const isAuthenticated=require('../middleware/authentication');
-router.get( '/', isAuthenticated,( req, res ) => { //READ
+router.get( '/',( req, res ) => { //READ
     UserModel.find( {} ).then( users => res.send( users ) ).catch( console.log )
 } );
 router.post( '/signup', async ( req, res ) => { //CREATE
