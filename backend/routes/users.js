@@ -54,9 +54,10 @@ router.post( '/login', async ( req, res ) => {
                 { usuario: req.body.usuario }, { email: req.body.email }
             ]
         } );
-        if ( !user ) return res.status( 400 ).send( 'Usuario o contraseña incorrectos' )
+        if ( !user ) return res.status( 400 ).send( 'Usuario o contraseña incorrectos' );
         const isMatch = await bcrypt.compare( req.body.password, user.password )
         if ( !isMatch ) return res.status( 400 ).send( 'Usuario o contraseña incorrectos' );
+        if(!user.confirmedEmail)res.status( 400 ).send( 'Debes confirmar tu email' );
         const token = await jwt.sign( { _id: user._id }, SECRET_JWT, { expiresIn: '7d' } );
         user.tokens.push( token )
         user.save()
