@@ -18,7 +18,6 @@ router.post( '/signup', async ( req, res ) => { //CREATE
         const emailToken = jwt.sign( { email: user.email }, SECRET_EMAIL_JWT, { expiresIn: '2d' } )
         const url = 'http://localhost:3000/user/confirmEmail/' + emailToken
         await transporter.sendMail( { //enviamos el email con la siguiente información:
-            from: "email@de.mentira", //procedencia del email
             to: user.email, // destinatario del email
             subject: "Active su cuenta en nuestra web de viajes", //asunto del email
             html: `  
@@ -30,6 +29,7 @@ router.post( '/signup', async ( req, res ) => { //CREATE
                     </p>
                     <b>Este link se caducará en 48 horas </b> ` //mensaje en HTML que enviamos al destinatario
         } )
+        transporter.close();
         res.send( user );
     } catch ( error ) {
         console.log( error );
