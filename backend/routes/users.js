@@ -5,10 +5,11 @@ const jwt = require( 'jsonwebtoken' );
 const { SECRET_JWT, SECRET_EMAIL_JWT } = require( '../config/password.js' );
 const transporter = require( '../config/nodemailer.js' );
 const isAuthenticated = require( '../middleware/authentication' );
-
+const upload = require( '../config/multer.js' )
 router.get( '/', ( req, res ) => { //READ
     UserModel.find( {} ).then( users => res.send( users ) ).catch( console.log )
 } );
+
 router.post( '/signup', async ( req, res ) => { //CREATE
     try {
         const user = await new UserModel( {
@@ -39,9 +40,9 @@ router.post( '/signup', async ( req, res ) => { //CREATE
 router.get( '/confirmEmail/:emailToken', async ( req, res ) => {
     try {
         const token = req.params.emailToken; //sacamos el token de la url
-        const email = jwt.verify( token, SECRET_EMAIL_JWT ).email;//sacamos el email del token
-        await UserModel.findOneAndUpdate( { email }, { confirmedEmail: true } )//actualizamos el usuario a email confirmado
-        res.send('usuario activado');//le decimos que el usuario ya esta activado
+        const email = jwt.verify( token, SECRET_EMAIL_JWT ).email; //sacamos el email del token
+        await UserModel.findOneAndUpdate( { email }, { confirmedEmail: true } ) //actualizamos el usuario a email confirmado
+        res.send( 'usuario activado' ); //le decimos que el usuario ya esta activado
     } catch ( error ) {
         console.log( error );
         res.status( 401 ).send( error )
@@ -50,14 +51,12 @@ router.get( '/confirmEmail/:emailToken', async ( req, res ) => {
 router.post( '/login', async ( req, res ) => {
     try {
         const user = await UserModel.findOne( {
-            $or: [
-                { usuario: req.body.usuario }, { email: req.body.email }
-            ]
+            $or: [ { usuario: req.body.usuario }, { email: req.body.email } ]
         } );
         if ( !user ) return res.status( 400 ).send( 'Usuario o contraseña incorrectos' );
         const isMatch = await bcrypt.compare( req.body.password, user.password )
         if ( !isMatch ) return res.status( 400 ).send( 'Usuario o contraseña incorrectos' );
-        if(!user.confirmedEmail)res.status( 400 ).send( 'Debes confirmar tu email' );
+        if ( !user.confirmedEmail ) res.status( 400 ).send( 'Debes confirmar tu email' );
         const token = await jwt.sign( { _id: user._id }, SECRET_JWT, { expiresIn: '7d' } );
         user.tokens.push( token )
         user.save()
@@ -68,9 +67,12 @@ router.post( '/login', async ( req, res ) => {
     }
 } )
 
-router.patch( '/', isAuthenticated, async ( req, res ) => {
+router.patch( '/', isAuthenticated, upload.single( 'avatar' ), async ( req, res ) => {
     try {
-        const user = await UserModel.findByIdAndUpdate( req.user._id, req.body, { new: true, useFindAndModify: false } )
+        const userData = { ...req.body }
+        if ( req.file ) userData.imagePath = req.file.filename;
+        if ( req.body.password ) userData.password = await bcrypt.hash( req.body.password, 10 );
+        const user = await UserModel.findByIdAndUpdate( req.user._id, userData, { new: true, useFindAndModify: false } )
         res.send( user )
     } catch ( error ) {
         console.log( error );

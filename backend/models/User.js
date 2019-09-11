@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema( {
         type:Boolean,
         default:false
     },
+    imagePath:String,
     tokens:[String]
 },{
     timestamps:true
@@ -37,8 +38,7 @@ userSchema.methods.toJSON=function () {
 userSchema.pre( 'save', function ( next ) {
     const user = this;
     if ( user.isModified( 'password' ) ) {
-        bcrypt.hash( user.password, 10 )
-            .then( hash => {
+        bcrypt.hash( user.password, 10 ).then( hash => {
                 user.password = hash;
                 return next();
             } ).catch( err => next( err ) )
